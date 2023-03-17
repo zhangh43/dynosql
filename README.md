@@ -76,7 +76,57 @@ ln -s /home/ubuntu/install /workspace/mariadb/install
 /home/ubuntu/install/bin/mysql -u ubuntu -S /tmp/mysqld3306.sock
 ```
 
-## 
+## Benchmark
+
+### Ycsb
+
+workloads/workloadc是只读查询 readproportion=1
+workloads/workloadi是只写查询 insertproportion=1
+
+DynoSQL Result
+
+```
+./bin/ycsb run jdbc -P workloads/workloadc -P jdbc-binding/conf/db.properties -cp /usr/share/java/mariadb-java-client-2.5.3.jar -p fieldcount=2 -p recordcount=1000 -p operationcount=400000 -threads 100
+
+[READ], Operations, 400000
+[READ], AverageLatency(us), 4990.82621
+[READ], MinLatency(us), 2360
+[READ], MaxLatency(us), 287743
+[READ], 95thPercentileLatency(us), 8223
+[READ], 99thPercentileLatency(us), 11671
+[READ], Return=OK, 400000
+
+./bin/ycsb run jdbc -P workloads/workloadi -P jdbc-binding/conf/db.properties -cp /usr/share/java/mariadb-java-client-2.5.3.jar -p fieldcount=2 -p recordcount=1000 -p operationcount=400000 -threads 100
+[INSERT], Operations, 400000
+[INSERT], AverageLatency(us), 6820.44114
+[INSERT], MinLatency(us), 4380
+[INSERT], MaxLatency(us), 236031
+[INSERT], 95thPercentileLatency(us), 9487
+```
+
+DynamoDB Result
+
+```
+./bin/ycsb run dynamodb -P workloads/workloadc -P dynamodb-binding/conf/dynamodb.properties -p fieldcount=2 -p recordcount=1000 -p operationcount=400000 -threads 100
+[READ], Operations, 400000
+[READ], AverageLatency(us), 3514.1403425
+[READ], MinLatency(us), 2644
+[READ], MaxLatency(us), 278527
+[READ], 95thPercentileLatency(us), 4175
+[READ], 99thPercentileLatency(us), 9383
+[READ], Return=OK, 400000
+
+./bin/ycsb run dynamodb -P workloads/workloadi -P dynamodb-binding/conf/dynamodb.properties -p fieldcount=2 -p recordcount=1000 -p operationcount=400000 -threads 100
+[INSERT], Operations, 400000
+[INSERT], AverageLatency(us), 6333.343
+[INSERT], MinLatency(us), 4592
+[INSERT], MaxLatency(us), 305919
+[INSERT], 95thPercentileLatency(us), 7751
+[INSERT], 99thPercentileLatency(us), 14687
+[INSERT], Return=OK, 400000
+```
+
+### Sysbench
 
 创建表和加载少量数据，表默认是按需计费模式。
 ```
