@@ -25,7 +25,6 @@ tar -zxvf monographdb-release-bin.tar.gz
 [mariadb]
 plugin_maturity=experimental
 datadir=/home/ubuntu/data0
-datadir=/home/ubuntu/data0
 max_connections=5000
 skip-log-bin
 port=3306
@@ -74,4 +73,26 @@ ln -s /home/ubuntu/install /workspace/mariadb/install
 
 ```
 /home/ubuntu/install/bin/mysql -u ubuntu -S /tmp/mysqld3306.sock
+```
+
+## 
+
+创建表和加载少量数据，表默认是按需计费模式。
+```
+sysbench /usr/share/sysbench/oltp_common.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=600 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false prepare
+```
+
+修改mono12.t._test_sbtest1的RCU和WCU，默认是按需模式。注：如果WCU过低，OLTP_INSERT的时候会报错，mysql log report：`Dynamo put error:The level of configured provisioned throughput for the table was exceeded. Consider increasing your provisioning level with the UpdateTable API.`
+
+OLTP_POINT_SELECT 查询
+
+```
+sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=10000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=60 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
+
+```
+
+OLTP_INSERT 查询
+
+```
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=10000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=60 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
 ```
