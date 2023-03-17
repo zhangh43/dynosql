@@ -19,7 +19,8 @@ sysbench
 tar -zxvf monographdb-release-bin.tar.gz
 
 ## 配置数据库
-请在配置文件/home/ubuntu/dynosql.cnf中填写 monograph_aws_access_key_id monograph_aws_secret_key monograph_dynamodb_region
+请在以下配置文件/home/ubuntu/dynosql.cnf中填写DynamoDB配置信息：
+monograph_aws_access_key_id， monograph_aws_secret_key， monograph_dynamodb_region
 
 ```
 [mariadb]
@@ -31,9 +32,6 @@ port=3306
 socket=/tmp/mysqld3306.sock
 plugin_load_add=ha_monograph
 monograph
-monograph_cass_hosts=127.0.0.1
-monograph_cass_user=cassandra
-monograph_cass_password=cassandra
 monograph_core_num=1
 monograph_local_ip=127.0.0.1:8000
 monograph_ip_list=127.0.0.1:8000
@@ -54,10 +52,13 @@ monograph_dynamodb_region=your region
 ## 初始化数据库
 数据库安装目录 /home/ubuntu/install
 
-```
+注：初始化时间比较长，目前简单添加8秒等待确保DynamoDB创建表成为CREATED状态，后续会优化。
 
+```
 /home/ubuntu/install/scripts/mysql_install_db --defaults-file=/home/ubuntu/dynosql.cnf --basedir=/home/ubuntu/install --datadir=/home/ubuntu/data0 --plugin-dir=/home/ubuntu/install/lib/plugin
 ```
+
+初始化完毕后，Dynamo会出现很多系统表。
 
 ## 启动数据库
 
@@ -87,12 +88,13 @@ sysbench /usr/share/sysbench/oltp_common.lua --mysql_storage_engine=monograph --
 OLTP_POINT_SELECT 查询
 
 ```
-sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=10000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=60 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
-
+sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=60 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
 ```
 
 OLTP_INSERT 查询
 
 ```
-sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=10000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=60 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=60 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
 ```
+
+性能目前还在优化中
