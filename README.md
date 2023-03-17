@@ -64,6 +64,9 @@ monograph_dynamodb_region=your region
 
 ```
 export LD_LIBRARY_PATH=/workspace/mariadb/install/lib
+sudo mkdir -p /workspace/mariadb/install
+sudo chown -R ubuntu:ubuntu /workspace
+ln -s /home/ubuntu/install /workspace/mariadb/install
 /home/ubuntu/install/bin/mysqld --defaults-file=/home/ubuntu/dynosql.cnf > mysql_log 2>&1 &
 ```
 
