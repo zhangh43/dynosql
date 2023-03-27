@@ -30,6 +30,7 @@ max_connections=5000
 skip-log-bin
 port=3306
 socket=/tmp/mysqld3306.sock
+plugin_dir=/home/ubuntu/install/lib/plugin
 plugin_load_add=ha_monograph
 monograph
 monograph_core_num=1
@@ -79,6 +80,36 @@ ln -s /home/ubuntu/install /workspace/mariadb/install
 ## Benchmark
 
 ### Ycsb
+
+创建表
+
+```
+# bin/mysql -uubuntu -S /tmp/mysqld3306.sock
+delete from mysql.user where User='';
+CREATE USER 'sysb'@'%' IDENTIFIED BY 'sysb';
+GRANT ALL PRIVILEGES ON * . * TO  'sysb'@'%';
+FLUSH PRIVILEGES;
+```
+
+创建表
+```
+# bin/mysql -u sysb -h 127.0.0.1 --port=3306 -p d3
+create database d3;
+CREATE TABLE usertable (
+        YCSB_KEY VARCHAR(255) PRIMARY KEY,
+        FIELD0 TEXT, FIELD1 TEXT,
+        FIELD2 TEXT, FIELD3 TEXT,
+        FIELD4 TEXT, FIELD5 TEXT,
+        FIELD6 TEXT, FIELD7 TEXT,
+        FIELD8 TEXT, FIELD9 TEXT
+);
+```
+
+灌入数据
+```
+./bin/ycsb load jdbc -P workloads/workloada -P jdbc-binding/conf/db.properties -cp /usr/share/java/mariadb-java-client-2.5.3.jar -p fieldcount=2 -p recordcount=1000 -threads 20
+```
+
 
 workloads/workloadc是只读查询 readproportion=1
 workloads/workloadi是只写查询 insertproportion=1
