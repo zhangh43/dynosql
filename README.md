@@ -174,8 +174,47 @@ sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monogr
 
 OLTP_INSERT 查询
 
+创建空表，禁用auto_increment和二级索引
+
 ```
-sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=60 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
 ```
 
-性能目前还在优化中
+修改RCU和WCU，等待一段时间。
+配置haproxy，测试一个节点
+
+```
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=sysb --mysql-host=127.0.0.1 --mysql-port=3390 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
+```
+
+性能结果：  TPS: 14768/sec
+
+性价比分析：
+
+SQL Wrapper c5.4xlarge vm price： $0.856/hour
+
+Dynamo provision 价格： $0.00065 per WCU per hour * 14768 = $9.5992/hour
+
+```
+Transactions 14768.40 per sec
+Latency (ms):
+         min:                                    4.16
+         avg:                                    6.73
+         max:                                 2306.97
+         95th percentile:                        9.22
+```
+
+配置haproxy，测试两个节点,性能结果表明线性可扩展
+
+
+```
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=sysb --mysql-host=127.0.0.1 --mysql-port=3390 --mysql-password=sysb --mysql-db=test --time=120 --threads=200 --report-interval=5 --auto_inc=off --create_secondary=false run
+```
+
+```
+Transactions: 29545.32 per sec.
+Latency (ms):
+         min:                                    4.09
+         avg:                                    6.77
+         max:                                 2370.54
+         95th percentile:                        9.22
+```
