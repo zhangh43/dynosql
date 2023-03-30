@@ -171,6 +171,36 @@ OLTP_POINT_SELECT 查询
 ```
 sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=60 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
 ```
+一节点
+
+```
+sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=172.31.44.86 --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
+```
+
+```
+transactions:                        (22745.55 per sec.)
+Latency (ms):
+         min:                                    2.03
+         avg:                                    4.40
+         max:                                  225.42
+         95th percentile:                        7.70
+```
+
+两节点
+
+```
+sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=127.0.0.1 --mysql-port=3390 --mysql-password=sysb --mysql-db=test --time=120 --threads=200 --report-interval=5 --auto_inc=off --create_secondary=false run
+
+```
+
+```
+transactions:                      (43990.35 per sec.)
+Latency (ms):
+         min:                                    1.98
+         avg:                                    4.54
+         max:                                 1092.03
+         95th percentile:                        7.56
+```
 
 OLTP_INSERT 查询
 
