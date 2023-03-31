@@ -53,8 +53,6 @@ monograph_dynamodb_region=your region
 ## 初始化数据库
 数据库安装目录 /home/ubuntu/install
 
-注：初始化时间比较长，目前简单添加8秒等待确保DynamoDB创建表成为CREATED状态，后续会优化。
-
 ```
 /home/ubuntu/install/scripts/mysql_install_db --defaults-file=/home/ubuntu/dynosql.cnf --basedir=/home/ubuntu/install --datadir=/home/ubuntu/data0 --plugin-dir=/home/ubuntu/install/lib/plugin
 ```
@@ -65,9 +63,6 @@ monograph_dynamodb_region=your region
 
 ```
 export LD_LIBRARY_PATH=/workspace/mariadb/install/lib
-sudo mkdir -p /workspace/mariadb/install
-sudo chown -R ubuntu:ubuntu /workspace
-ln -s /home/ubuntu/install /workspace/mariadb/install
 /home/ubuntu/install/bin/mysqld --defaults-file=/home/ubuntu/dynosql.cnf > mysql_log 2>&1 &
 ```
 
