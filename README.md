@@ -159,23 +159,23 @@ DynamoDB Result
 
 ### Sysbench
 
-创建表和加载少量数据，表默认是按需计费模式。
+创建表和加载少量数据，表默认是按需计费模式
+
 ```
 sysbench /usr/share/sysbench/oltp_common.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=600 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false prepare
 ```
 
 修改mono12.t._test_sbtest1的RCU和WCU，默认是按需模式。注：如果WCU过低，OLTP_INSERT的时候会报错，mysql log report：`Dynamo put error:The level of configured provisioned throughput for the table was exceeded. Consider increasing your provisioning level with the UpdateTable API.`
 
-OLTP_POINT_SELECT 查询
+#### OLTP_POINT_SELECT 查询
+
+单节点
 
 ```
-sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=ubuntu --mysql-socket=/tmp/mysqld3306.sock --mysql-db=test --time=60 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
+sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=172.31.44.86 --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all run
 ```
-一节点
 
-```
-sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=172.31.44.86 --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
-```
+性能结果
 
 ```
 transactions:                        (22745.55 per sec.)
@@ -186,12 +186,13 @@ Latency (ms):
          95th percentile:                        7.70
 ```
 
-两节点
+配置haproxy，测试两个节点,性能结果表明线性可扩展
 
 ```
-sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=127.0.0.1 --mysql-port=3390 --mysql-password=sysb --mysql-db=test --time=120 --threads=200 --report-interval=5 --auto_inc=off --create_secondary=false run
-
+sysbench /usr/share/sysbench/oltp_point_select.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=127.0.0.1 --mysql-port=3390 --mysql-password=sysb --mysql-db=test --time=120 --threads=200 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all run
 ```
+
+性能结果
 
 ```
 transactions:                      (43990.35 per sec.)
@@ -202,28 +203,21 @@ Latency (ms):
          95th percentile:                        7.56
 ```
 
-OLTP_INSERT 查询
+#### OLTP_INSERT 查询
 
 创建空表，禁用auto_increment和二级索引
 
 ```
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=127.0.0.1 --mysql-port=3390 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all prepare
 ```
 
 修改RCU和WCU，等待一段时间。
-配置haproxy，测试一个节点
 
 ```
-sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=sysb --mysql-host=127.0.0.1 --mysql-port=3390 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false run
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=sysb --mysql-host=127.0.0.1 --mysql-port=3390 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all run
 ```
 
-性能结果：  TPS: 14768/sec
-
-性价比分析：
-
-SQL Wrapper c5.4xlarge vm price： $0.856/hour
-
-Dynamo provision 价格： $0.00065 per WCU per hour * 14768 = $9.5992/hour
-
+性能结果
 ```
 Transactions 14768.40 per sec
 Latency (ms):
@@ -233,8 +227,13 @@ Latency (ms):
          95th percentile:                        9.22
 ```
 
-配置haproxy，测试两个节点,性能结果表明线性可扩展
+性价比分析：
 
+SQL Wrapper c5.4xlarge vm price： $0.856/hour
+
+Dynamo provision 价格： $0.00065 per WCU per hour * 14768 = $9.5992/hour
+
+配置haproxy，测试两个节点,性能结果表明线性可扩展
 
 ```
 sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=sysb --mysql-host=127.0.0.1 --mysql-port=3390 --mysql-password=sysb --mysql-db=test --time=120 --threads=200 --report-interval=5 --auto_inc=off --create_secondary=false run
@@ -247,4 +246,20 @@ Latency (ms):
          avg:                                    6.77
          max:                                 2370.54
          95th percentile:                        9.22
+```
+
+#### Update查询
+
+```
+sysbench /usr/share/sysbench/oltp_update_non_index.lua --mysql_storage_engine=monograph --tables=1 --table_size=1000 --mysql-user=sysb --mysql-host=172.31.44.86 --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all run
+```
+
+Update_non_index 性能结果（单节点）
+```
+transactions:                        1227908 (10136.47 per sec.)
+Latency (ms):
+         min:                                    4.30
+         avg:                                    9.78
+         max:                                25724.58
+         95th percentile:                       12.98
 ```
