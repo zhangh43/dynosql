@@ -1,4 +1,4 @@
-# dynosql
+# MonoSQL (SQL wrapper for DynamoDB)
 
 ## 安装依赖
 libgoogle-glog-dev
@@ -20,7 +20,6 @@ tar -zxvf monographdb-release-bin.tar.gz
 
 ## 配置数据库
 请在以下配置文件/home/ubuntu/dynosql.cnf中填写DynamoDB配置信息：
-monograph_aws_access_key_id， monograph_aws_secret_key， monograph_dynamodb_region
 
 ```
 [mariadb]
@@ -33,27 +32,17 @@ socket=/tmp/mysqld3306.sock
 plugin_dir=/home/ubuntu/install/lib/plugin
 plugin_load_add=ha_monograph
 monograph
-monograph_core_num=1
-monograph_local_ip=127.0.0.1:8000
-monograph_ip_list=127.0.0.1:8000
-#monograph_metrics_port=18081
-monograph_checkpointer_interval_sec=86400
-monograph_node_memory_limit_mb=1600
 monograph_kv_storage=dynamo
-monograph_enable_mvcc=off
-monograph_checkpointer_delay_sec=0
-#skip-grant-tables
-
+monograph_dynamodb_default_credentials=on
+monograph_dynamodb_region=ap-northeast-1
 monograph_keyspace_name=mono
-monograph_aws_access_key_id=your id
-monograph_aws_secret_key=your key
-monograph_dynamodb_region=your region
 ```
 
 ## 初始化数据库
 数据库安装目录 /home/ubuntu/install
 
 ```
+export LD_LIBRARY_PATH=/workspace/mariadb/install/lib
 /home/ubuntu/install/scripts/mysql_install_db --defaults-file=/home/ubuntu/dynosql.cnf --basedir=/home/ubuntu/install --datadir=/home/ubuntu/data0 --plugin-dir=/home/ubuntu/install/lib/plugin
 ```
 
@@ -62,7 +51,6 @@ monograph_dynamodb_region=your region
 ## 启动数据库
 
 ```
-export LD_LIBRARY_PATH=/workspace/mariadb/install/lib
 /home/ubuntu/install/bin/mysqld --defaults-file=/home/ubuntu/dynosql.cnf > mysql_log 2>&1 &
 ```
 
@@ -72,11 +60,8 @@ export LD_LIBRARY_PATH=/workspace/mariadb/install/lib
 /home/ubuntu/install/bin/mysql -u ubuntu -S /tmp/mysqld3306.sock
 ```
 
-## Benchmark
 
-### Ycsb
-
-创建表
+## 创建用户
 
 ```
 # bin/mysql -uubuntu -S /tmp/mysqld3306.sock
@@ -85,6 +70,11 @@ CREATE USER 'sysb'@'%' IDENTIFIED BY 'sysb';
 GRANT ALL PRIVILEGES ON * . * TO  'sysb'@'%';
 FLUSH PRIVILEGES;
 ```
+
+## Benchmark
+
+### Ycsb
+
 
 创建表
 ```
