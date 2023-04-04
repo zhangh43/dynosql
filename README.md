@@ -25,7 +25,10 @@ tar -zxvf monographdb-release-bin.tar.gz
 [mariadb]
 plugin_maturity=experimental
 datadir=/home/ubuntu/data0
-max_connections=5000
+max_connections=1000
+thread_handling=pool-of-threads
+thread_pool_size=100
+performance_schema=ON
 skip-log-bin
 port=3306
 socket=/tmp/mysqld3306.sock
@@ -36,6 +39,22 @@ monograph_kv_storage=dynamo
 monograph_dynamodb_default_credentials=on
 monograph_dynamodb_region=ap-northeast-1
 monograph_keyspace_name=mono
+
+performance-schema-instrument='stage/%=ON'
+performance-schema-consumer-events-stages-current=ON
+performance-schema-consumer-events-stages-history=ON
+performance-schema-consumer-events-stages-history-long=ON
+
+performance-schema-instrument='statement/%=ON'
+performance-schema-consumer-events-statements-current=ON
+performance-schema-consumer-events-statements-history=ON
+performance-schema-consumer-events-statements-history-long=ON
+performance-schema-consumer-statements-digest=ON
+
+performance-schema-instrument='transaction=ON'
+performance-schema-consumer-events-transactions-current=ON
+performance-schema-consumer-events-transactions-history=ON
+performance-schema-consumer-events-transactions-history-long=ON
 ```
 
 ## 初始化数据库
