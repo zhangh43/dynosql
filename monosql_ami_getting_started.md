@@ -2,11 +2,11 @@
 
 ## Get MonoSQL AMI
 
-AMI name: MonoSQLServer
+AMI name: `MonoSQLServer`
 
 AMI includes MonoSQL server. Auto scaling group uses this AMI to create instances.
 
-AMI name: MonoSQLMonitor
+AMI name: `MonoSQLMonitor`
 
 AMI includes Prometheus and Grafana. Create a standalone instance with this AMI. It will collect MonoSQL server metrics from Auto scaling group named `MonoSQL`.
 
