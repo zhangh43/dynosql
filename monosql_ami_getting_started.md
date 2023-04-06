@@ -2,9 +2,17 @@
 
 ## Get MonoSQL AMI
 
-AMI name:
+AMI name: MonoSQLServer
+
+AMI includes MonoSQL server. Auto scaling group uses this AMI to create instances.
+
+AMI name: MonoSQLMonitor
+
+AMI includes Prometheus and Grafana. Create a standalone instance with this AMI. It will collect MonoSQL server metrics from Auto scaling group named `MonoSQL`.
 
 TODO: In future, we integrate AMI with AWS Market Place. User can buy VM with MonoSQL AMI through Market Place.
+
+
 
 
 ## Bootstrap MonoSQL
@@ -17,7 +25,7 @@ Create a vm using MonoSQL AMI and bootstrap DynamoDB with commands below
 /home/ubuntu/install/scripts/mysql_install_db --defaults-file=/home/ubuntu/dynosql.cnf --basedir=/home/ubuntu/install --datadir=/home/ubuntu/data0 --plugin-dir=/home/ubuntu/install/lib/plugin > log 2>&1 &
 ```
 
-Create User `sysb`
+Create User `sysb` to run sysbench benchmark later
 
 ```
 # startdb
@@ -39,7 +47,7 @@ Help link: https://docs.aws.amazon.com/autoscaling/ec2/userguide/get-started-wit
 
 Max vm number: 10
 Expected vm number: 3
-Min vm number: 1
+Min vm number: 0
 
 The security group should allow TCP trafic from port 3306.
 
