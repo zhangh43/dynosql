@@ -25,17 +25,22 @@ Create a vm using MonoSQL AMI and bootstrap DynamoDB with commands below
 /home/ubuntu/install/scripts/mysql_install_db --defaults-file=/home/ubuntu/dynosql.cnf --basedir=/home/ubuntu/install --datadir=/home/ubuntu/data0 --plugin-dir=/home/ubuntu/install/lib/plugin > log 2>&1 &
 ```
 
-Create User `sysb` to run sysbench benchmark later
+Create user `sysb` to run sysbench benchmark and user `mono` for monitor.
 
 ```
 # startdb
 /home/ubuntu/install/bin/mysqld --defaults-file=/home/ubuntu/dynosql.cnf > mysql_log 2>&1 &
 
-# bin/mysql -uubuntu -S /tmp/mysqld3306.sock
+# bin/mysql -uubuntu -S /tmp/mysqld3306.sock test
+
 delete from mysql.user where User='';
 CREATE USER 'sysb'@'%' IDENTIFIED BY 'sysb';
 GRANT ALL PRIVILEGES ON * . * TO  'sysb'@'%';
+
+CREATE USER IF NOT EXISTS 'mono'@'%' IDENTIFIED BY 'mono' WITH MAX_USER_CONNECTIONS 5;
+GRANT ALL PRIVILEGES ON *.* TO 'mono'@'%' IDENTIFIED BY 'mono' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
+
 ```
 
 
@@ -69,12 +74,7 @@ Suppose the NLB DNS is `MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.
 
 ```
 sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 
---mysql-user=sysb --mysql-host=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com --mysql-port=3306 
---mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off 
---create_secondary=false --mysql-ignore-errors=all prepare
+--mysql-user=sysb --mysql-host=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all prepare
 
-sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 
---mysql-user=sysb --mysql-host=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com --mysql-port=3306 
---mysql-password=sysb --mysql-db=test --time=120 --threads=300 --report-interval=5 --auto_inc=off 
---create_secondary=false --mysql-ignore-errors=all run
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=300 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all run
 ```
