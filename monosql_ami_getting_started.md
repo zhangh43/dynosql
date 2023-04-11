@@ -1,5 +1,13 @@
 # MonoSQL(AMI based) Getting Started
 
+## Prerequisite
+
+1. AWS region must be ap-northeast-1 currently.
+
+2. Create AWS role `monosql` as the vm role when running MonoSQLServer and MonoSQL Monitor.
+
+Privileges of role `monosql`: AmazonEC2ReadOnlyAccess, AmazonEC2ReadOnlyAccess, CloudWatchLogsFullAccess, CloudWatchAgentServerPolicy
+
 ## Get MonoSQL AMI
 
 AMI name: `MonoSQLServer`
@@ -12,27 +20,28 @@ AMI includes Prometheus and Grafana. Create a standalone instance with this AMI.
 
 TODO: In future, we integrate AMI with AWS Market Place. User can buy VM with MonoSQL AMI through Market Place.
 
-
-
-
 ## Bootstrap MonoSQL
 
 MonoSQL needs run bootstrap to create system table on DynamoDB.
 
-Create a vm using MonoSQL AMI and bootstrap DynamoDB with commands below
+Create a vm using `MonoSQLServer` AMI and bootstrap DynamoDB with commands below
 
 ```
 /home/ubuntu/install/scripts/mysql_install_db --defaults-file=/home/ubuntu/dynosql.cnf --basedir=/home/ubuntu/install --datadir=/home/ubuntu/data0 --plugin-dir=/home/ubuntu/install/lib/plugin > log 2>&1 &
 ```
 
+`OK` in log file indicates the bootstrap succeeded.
+
 Create user `sysb` to run sysbench benchmark and user `mono` for monitor.
 
 ```
-# startdb
+# startdb.
 /home/ubuntu/install/bin/mysqld --defaults-file=/home/ubuntu/dynosql.cnf > mysql_log 2>&1 &
 
-# bin/mysql -uubuntu -S /tmp/mysqld3306.sock test
+# connect to db.
+bin/mysql -uubuntu -S /tmp/mysqld3306.sock test
 
+# create sysbench user and monitor user.
 delete from mysql.user where User='';
 CREATE USER 'sysb'@'%' IDENTIFIED BY 'sysb';
 GRANT ALL PRIVILEGES ON * . * TO  'sysb'@'%';
@@ -46,19 +55,20 @@ FLUSH PRIVILEGES;
 
 ## Create Auto Scaling Group
 
-Create auto-scaling group with MonoSQL AMI.
+Create auto-scaling group with `MonoSQLServer` AMI.
 
 Help link: https://docs.aws.amazon.com/autoscaling/ec2/userguide/get-started-with-ec2-auto-scaling.html?icmpid=docs_ec2as_help_panel
 
+Group name: MonoSQL (group name is used by Prometheus and thus can not be changed)
 Max vm number: 10
 Expected vm number: 3
 Min vm number: 0
 
 The security group should allow TCP trafic from port 3306.
 
-## Create Network Load Balancer
+When creating auto-scaling group, the network load balancer could be created and attached at once. See section below.
 
-Create auto-scaling group with MonoSQL AMI.
+## Create Network Load Balancer
 
 Help link: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html
 
@@ -67,6 +77,24 @@ Attach the auto-scaling group to NLB.
 Choose NLB type to internal (We use the client vm in the same subnet to connect to the NLB server)
 
 Set listener port of NLB to 3306.
+
+## Create Prometheus and Grafana Node
+
+Create Prometheus and Grafana with `MonoSQLMonitor` AMI.
+
+Use web browser to access http://nodeip:3000 to get the metrics of MonoSQL server.
+
+Note that the Prometheus will monitor auto-scaling group named `MonoSQL` automatically.
+
+## Retrieving server logs using Cloud Watch
+
+Server logs of vms in auto-scaling group are stored in Cloud Watch.
+
+Log group name: monosql-service
+
+Log name format: vmid-ip.region.compute.internal-monosql-service.log 
+
+example: i-0b68393de9490367c-ip-172-31-39-136.ap-northeast-1.compute.internal-monosql-service.log
 
 ## Test Using Sysbench
 
