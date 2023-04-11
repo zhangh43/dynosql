@@ -2,9 +2,9 @@
 
 ## Prerequisite
 
-1. AWS region must be ap-northeast-1 currently.
+1. AWS region must be `ap-northeast-1` currently.
 
-2. Create AWS role `monosql` as the vm role when running MonoSQLServer and MonoSQL Monitor. Privileges of role `monosql`: AmazonEC2ReadOnlyAccess, AmazonEC2ReadOnlyAccess, CloudWatchLogsFullAccess, CloudWatchAgentServerPolicy
+2. Create AWS role `monosql` as the vm role when running MonoSQLServer and MonoSQL Monitor. Privileges of role `monosql`: `AmazonEC2ReadOnlyAccess`, `AmazonEC2ReadOnlyAccess`, `CloudWatchLogsFullAccess`, `CloudWatchAgentServerPolicy`
 
 ## Get MonoSQL AMI
 
@@ -58,8 +58,11 @@ Create auto-scaling group with `MonoSQLServer` AMI.
 Help link: https://docs.aws.amazon.com/autoscaling/ec2/userguide/get-started-with-ec2-auto-scaling.html?icmpid=docs_ec2as_help_panel
 
 Group name: MonoSQL (group name is used by Prometheus and thus can not be changed)
+
 Max vm number: 10
+
 Expected vm number: 3
+
 Min vm number: 0
 
 The security group should allow TCP trafic from port 3306.
@@ -99,8 +102,7 @@ example: i-0b68393de9490367c-ip-172-31-39-136.ap-northeast-1.compute.internal-mo
 Suppose the NLB DNS is `MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com`
 
 ```
-sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 
---mysql-user=sysb --mysql-host=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all prepare
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all prepare
 
 sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=300 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all run
 ```
