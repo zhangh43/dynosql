@@ -37,7 +37,7 @@ Create user `sysb` to run sysbench benchmark and user `mono` for monitor.
 /home/ubuntu/install/bin/mysqld --defaults-file=/home/ubuntu/dynosql.cnf > mysql_log 2>&1 &
 
 # connect to db.
-bin/mysql -uubuntu -S /tmp/mysqld3306.sock test
+/home/ubuntu/install/bin/mysql -uubuntu -S /tmp/mysqld3306.sock test
 
 # create sysbench user and monitor user.
 delete from mysql.user where User='';
