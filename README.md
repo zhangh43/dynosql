@@ -17,9 +17,9 @@
 
 MonoSQL is the SQL wrapper for DynamoDB. It helps the users from Mysql/MariaDB to migrate to DynamoDB with less effort to modify their application and remaining to use JDBC/ODBC to connect to you data.
 
-MonoSQL server is stateless, all the catalog and data are stored in DynamoDB. SQL queries will be parsed, optimized and executed by MonoSQL server, while MonoSQL server will ask DynamoDB for the real data by using GetItem, PutItem etc. request.
+MonoSQL server is stateless, all the catalog and data are stored in DynamoDB. SQL queries will be parsed, optimized and executed by MonoSQL server, while MonoSQL server will ask DynamoDB for the real data by using `GetItem`, `PutItem` etc. requests.
 
-MonoSQL can be deployed using AWS AutoScaling Group to achieve horizontal scale and automatically expand and shrink based on workload by integrating with cloud watch (Coming Soon).
+MonoSQL can be deployed using AWS AutoScaling Group to achieve horizontal scale and automatically expand and shrink based on workload by integrating with cloud watch (Cloud watch integration Coming Soon).
 
 
 The feature of MonoSQL includes:
