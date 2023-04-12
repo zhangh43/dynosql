@@ -4,7 +4,7 @@
 
 1. AWS region must be `ap-northeast-1` currently.
 
-2. Create AWS role `monosql` as the vm role when running MonoSQLServer and MonoSQL Monitor. Privileges of role `monosql`: `AmazonEC2ReadOnlyAccess`, `AmazonEC2ReadOnlyAccess`, `CloudWatchLogsFullAccess`, `CloudWatchAgentServerPolicy`
+2. Create AWS role `monosql` as the vm role when running MonoSQLServer and MonoSQL Monitor. Privileges of role `monosql`: `AmazonEC2ReadOnlyAccess`, `AmazonSQSFullAccess`, `AmazonDynamoDBFullAccess`, `CloudWatchLogsFullAccess`, `CloudWatchAgentServerPolicy`
 
 ## Get MonoSQL AMI
 
