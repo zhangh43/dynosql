@@ -102,7 +102,8 @@ example: i-0b68393de9490367c-ip-172-31-39-136.ap-northeast-1.compute.internal-mo
 Suppose the NLB DNS is `MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com`
 
 ```
-sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all prepare
+export LB_ADDR=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monosql --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=$LB_ADDR --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=100 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all prepare
 
-sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monograph --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=MonoSQL-1-56977fbaf2a27fef.elb.ap-northeast-1.amazonaws.com --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=300 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all run
+sysbench /usr/share/sysbench/oltp_insert.lua --mysql_storage_engine=monosql --tables=1 --table_size=100000 --mysql-user=sysb --mysql-host=$LB_ADDR --mysql-port=3306 --mysql-password=sysb --mysql-db=test --time=120 --threads=300 --report-interval=5 --auto_inc=off --create_secondary=false --mysql-ignore-errors=all run
 ```
