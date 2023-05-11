@@ -6,7 +6,7 @@
 成章数据已获得顶级技术专家和风投投资基金的投资。成章数据致力于打造具有自主产权、业界领先的新一代企业级数据库和数据管理解决方案。
 
 ## MonoSQL产品介绍
-MonoSQL是一款基于DynamoDB的分布式SQL数据库。受益于DynamoDB的Serverless架构和任何数据规模下的查询个位数延时保障，MonoSQL在支持SQL生态的同时，具有极致的可扩展性，
+MonoSQL是成章数据打造的一款基于DynamoDB的分布式SQL数据库。受益于DynamoDB的Serverless架构和任何数据规模下的查询个位数延时保障，MonoSQL在支持SQL生态的同时，具有极致的可扩展性，
 高并发写入能力和低成本的按需计费模型。
 
 MonoSQL适合游戏，社交，电商，Web3，金融科技等场景，可以帮助用户轻松应对业务的快速增长，支持每秒处理百万级用户并发和百万级查询请求。
@@ -28,11 +28,14 @@ Figure 1 MonoSQL Architecture
 </p>
 
 ## Benchmark
-MonoSQL具有高并发写入能力,写入性能随MonoSQL实例数线程增长。使用Sysbench OLTP_INSERT负载进行测试，MonoSQL实例机型：c5.12xlarge, 测试结果如下：
+MonoSQL具有高并发写入能力,写入性能随MonoSQL实例数线程增长。使用Sysbench OLTP_INSERT负载进行测试, 测试结果如下：
 
-|  实例数 | 写入TPS |
-|  :----: | :----:  |
-|   1     | 70000   |
-|   2     | 140000  |
-|   3     | 210000  |
-|   4     | 280000  |
+|  实例数  | 实例机型.    | OLTP_INSERT TPS |
+|  :----: | :----:      |:----:           |
+|   1     | c5.4xlarge  | 20000           |
+|   2     | c5.4xlarge  | 40000           |
+|   1     | c5.12xlarge | 60000           |
+|   2     | c5.12xlarge | 120000          |
+|   4     | c5.12xlarge | 240000          |
+
+
