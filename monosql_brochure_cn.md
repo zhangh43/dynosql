@@ -23,19 +23,22 @@ MonoSQL适合游戏，社交，电商，Web3，金融科技等场景，可以帮
 MonoSQL支持基于Auto Scaling Groups和EKS(Kubernetes)的部署方案。MonoSQL Server是无状态SQL计算节点，通过Auto Scaling Groups按需伸缩。可选的，Redis Server可以作为MonoSQL Server的缓存节点，负责数据读请求。用户可以手动或者通过AWS Cloud Watch调整AutoScale Group的实例数。
 
 <p align="center">
-<img src="images/monosql.png">
-Figure 1 MonoSQL Architecture
+<img src="images/monosql.png" width="70%">
+</p>
+
+<p align="center">
+Figure MonoSQL Architecture
 </p>
 
 ## Benchmark
 MonoSQL具有高并发写入能力,写入性能随MonoSQL实例数线程增长。使用Sysbench OLTP_INSERT负载进行测试, 测试结果如下：
 
-|  实例数  | 实例机型.    | OLTP_INSERT TPS |
+|  实例数  | 实例机型     | OLTP_INSERT TPS |
 |  :----: | :----:      |:----:           |
-|   1     | c5.4xlarge  | 20000           |
-|   2     | c5.4xlarge  | 40000           |
-|   1     | c5.12xlarge | 60000           |
-|   2     | c5.12xlarge | 120000          |
-|   4     | c5.12xlarge | 240000          |
+|   1     | c5.4xlarge  | 18810           |
+|   2     | c5.4xlarge  | 37706           |
+|   1     | c5.12xlarge | 61032           |
+|   2     | c5.12xlarge | 12944          |
+|   4     | c5.12xlarge | 25021          |
 
 
