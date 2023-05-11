@@ -38,7 +38,7 @@ MonoSQL具有高并发写入能力,写入性能随MonoSQL实例数线程增长�
 |   1     | c5.4xlarge  | 18810           |
 |   2     | c5.4xlarge  | 37706           |
 |   1     | c5.12xlarge | 61032           |
-|   2     | c5.12xlarge | 12944          |
-|   4     | c5.12xlarge | 25021          |
+|   2     | c5.12xlarge | 124344          |
+|   4     | c5.12xlarge | 251021          |
 
 
